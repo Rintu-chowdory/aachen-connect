@@ -4,5 +4,6 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Inter, system-ui, sans-serif; background: #f8fafc; color: #1e293b; }
+html.dark body { background: #0f172a; color: #e2e8f0; }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; }
