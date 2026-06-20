@@ -1,37 +1,31 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Phone, Sun, Moon } from 'lucide-react'
-
-const nav = [
-  { to: '/', label: 'Startseite' },
-  { to: '/services', label: 'Stadtservices' },
-  { to: '/events', label: 'Veranstaltungen' },
-  { to: '/news', label: 'Nachrichten' },
-]
+import { useLang } from '../context/LangContext.jsx'
 
 export default function Layout({ children }) {
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
+  const { lang, toggleLang, tr } = useLang()
   const [dark, setDark] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark'
-    }
+    if (typeof window !== 'undefined') return localStorage.getItem('theme') === 'dark'
     return false
   })
 
   useEffect(() => {
-    if (dark) {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
-    }
+    if (dark) { document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark') }
+    else { document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light') }
   }, [dark])
+
+  const nav = [
+    { to: '/', label: tr.nav.home },
+    { to: '/services', label: tr.nav.services },
+    { to: '/events', label: tr.nav.events },
+    { to: '/news', label: tr.nav.news },
+  ]
 
   return (
     <div className="min-h-screen flex flex-col dark:bg-gray-900 dark:text-gray-100 transition-colors">
-      {/* Topbar */}
       <header className="bg-[#003D73] text-white sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
@@ -51,16 +45,26 @@ export default function Layout({ children }) {
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Language toggle */}
+            <button
+              onClick={toggleLang}
+              className="h-8 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 flex items-center gap-1.5 text-white transition-colors text-xs font-bold"
+              title={lang === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
+            >
+              <span className="text-base">{lang === 'de' ? '🇩🇪' : '🇬🇧'}</span>
+              {lang === 'de' ? 'DE' : 'EN'}
+            </button>
+            {/* Dark mode toggle */}
             <button
               onClick={() => setDark(!dark)}
-              className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-              title={dark ? 'Hellmodus' : 'Dunkelmodus'}
+              className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+              title={dark ? 'Light mode' : 'Dark mode'}
             >
-              {dark ? <Sun size={17} /> : <Moon size={17} />}
+              {dark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
-            <a href="tel:0241180" className="hidden md:flex items-center gap-2 bg-[#C8A951] text-[#003D73] font-semibold text-sm px-4 py-2 rounded-lg hover:bg-yellow-400 transition-colors">
-              <Phone size={14} /> 0241 180
+            <a href="tel:0241180" className="hidden md:flex items-center gap-2 bg-[#C8A951] text-[#003D73] font-semibold text-sm px-3 py-2 rounded-lg hover:bg-yellow-400 transition-colors">
+              <Phone size={13} /> 0241 180
             </a>
             <button className="md:hidden text-white p-1" onClick={() => setOpen(!open)}>
               {open ? <X size={24} /> : <Menu size={24} />}
@@ -82,9 +86,9 @@ export default function Layout({ children }) {
       </header>
       <main className="flex-1">{children}</main>
       <footer className="bg-[#003D73] text-blue-200 text-center text-sm py-6 mt-12">
-        <p className="font-semibold text-white mb-1">Stadt Aachen — Stadtportal</p>
-        <p>Markt 39, 52058 Aachen · 0241 180 · stadtportal@aachen.de</p>
-        <p className="mt-2 text-xs text-blue-300">© 2025 Stadt Aachen. Alle Rechte vorbehalten.</p>
+        <p className="font-semibold text-white mb-1">{tr.footer.title}</p>
+        <p>{tr.footer.address}</p>
+        <p className="mt-2 text-xs text-blue-300">{tr.footer.copyright}</p>
       </footer>
     </div>
   )
