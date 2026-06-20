@@ -41,12 +41,12 @@ const articles = [
 ]
 
 const catColors = {
-  Stadtentwicklung: 'bg-blue-100 text-blue-700',
-  Bildung: 'bg-purple-100 text-purple-700',
-  Nachhaltigkeit: 'bg-green-100 text-green-700',
-  Tourismus: 'bg-amber-100 text-amber-700',
-  Gesundheit: 'bg-red-100 text-red-700',
-  Verkehr: 'bg-teal-100 text-teal-700',
+  Stadtentwicklung: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+  Bildung: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+  Nachhaltigkeit: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+  Tourismus: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+  Gesundheit: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
+  Verkehr: 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
 }
 
 const ALL = 'Alle'
@@ -66,8 +66,8 @@ export default function News() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Aachen Nachrichten</h1>
-        <p className="text-gray-500">Aktuelle Meldungen aus der Kaiserstadt</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Aachen Nachrichten</h1>
+        <p className="text-gray-500 dark:text-gray-400">Aktuelle Meldungen aus der Kaiserstadt</p>
       </div>
 
       {/* Search bar */}
@@ -77,10 +77,10 @@ export default function News() {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Nachrichten durchsuchen …"
-          className="w-full pl-11 pr-10 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#003D73] focus:ring-2 focus:ring-[#003D73]/10 transition-all"
+          className="w-full pl-11 pr-10 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 outline-none focus:border-[#003D73] focus:ring-2 focus:ring-[#003D73]/10 transition-all"
         />
         {query && (
-          <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
             <X size={16} />
           </button>
         )}
@@ -95,12 +95,12 @@ export default function News() {
             className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
               active === cat
                 ? 'bg-[#003D73] text-white border-[#003D73] shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-[#003D73] hover:text-[#003D73]'
+                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-[#003D73] hover:text-[#003D73]'
             }`}
           >
             {cat}
             {cat !== ALL && (
-              <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${active === cat ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>
+              <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${active === cat ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                 {articles.filter(a => a.cat === cat).length}
               </span>
             )}
@@ -108,27 +108,27 @@ export default function News() {
         ))}
       </div>
 
-      <p className="text-sm text-gray-400 mb-4">
+      <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">
         {filtered.length} Ergebnis{filtered.length !== 1 ? 'se' : ''}
         {active !== ALL ? ` in „${active}"` : ''}
         {query ? ` für „${query}"` : ''}
       </p>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">Keine Nachrichten gefunden.</div>
+        <div className="text-center py-20 text-gray-400 dark:text-gray-500">Keine Nachrichten gefunden.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filtered.map(a => (
-            <div key={a.title} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
+            <div key={a.title} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
               <div className={`${a.color} h-2 w-full`} />
               <div className="p-5">
                 <div className="flex items-center justify-between mb-3">
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${catColors[a.cat] || 'bg-gray-100 text-gray-600'}`}>{a.cat}</span>
-                  <span className="flex items-center gap-1 text-xs text-gray-400"><Clock size={11} />{a.date}</span>
+                  <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500"><Clock size={11} />{a.date}</span>
                 </div>
-                <h3 className="font-bold text-gray-900 mb-2 group-hover:text-[#003D73] transition-colors">{a.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed mb-3">{a.summary}</p>
-                <span className="flex items-center gap-1 text-[#003D73] font-semibold text-sm">Weiterlesen <ChevronRight size={14} /></span>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-2 group-hover:text-[#003D73] dark:group-hover:text-blue-400 transition-colors">{a.title}</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-3">{a.summary}</p>
+                <span className="flex items-center gap-1 text-[#003D73] dark:text-blue-400 font-semibold text-sm">Weiterlesen <ChevronRight size={14} /></span>
               </div>
             </div>
           ))}
