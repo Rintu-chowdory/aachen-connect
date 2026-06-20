@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Phone, Bell } from 'lucide-react'
+import { Menu, X, Phone, Sun, Moon } from 'lucide-react'
 
 const nav = [
   { to: '/', label: 'Startseite' },
@@ -12,9 +12,25 @@ const nav = [
 export default function Layout({ children }) {
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark'
+    }
+    return false
+  })
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+    }
+  }, [dark])
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col dark:bg-gray-900 dark:text-gray-100 transition-colors">
       {/* Topbar */}
       <header className="bg-[#003D73] text-white sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -36,6 +52,13 @@ export default function Layout({ children }) {
             ))}
           </nav>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setDark(!dark)}
+              className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+              title={dark ? 'Hellmodus' : 'Dunkelmodus'}
+            >
+              {dark ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
             <a href="tel:0241180" className="hidden md:flex items-center gap-2 bg-[#C8A951] text-[#003D73] font-semibold text-sm px-4 py-2 rounded-lg hover:bg-yellow-400 transition-colors">
               <Phone size={14} /> 0241 180
             </a>
