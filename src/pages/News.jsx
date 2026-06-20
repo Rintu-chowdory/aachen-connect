@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Clock, ChevronRight } from 'lucide-react'
+import { Clock, ChevronRight, Search, X } from 'lucide-react'
 
 const articles = [
   {
@@ -54,8 +54,14 @@ const categories = [ALL, ...Array.from(new Set(articles.map(a => a.cat)))]
 
 export default function News() {
   const [active, setActive] = useState(ALL)
+  const [query, setQuery] = useState('')
 
-  const filtered = active === ALL ? articles : articles.filter(a => a.cat === active)
+  const filtered = articles.filter(a => {
+    const matchCat = active === ALL || a.cat === active
+    const q = query.toLowerCase()
+    const matchSearch = !q || a.title.toLowerCase().includes(q) || a.summary.toLowerCase().includes(q)
+    return matchCat && matchSearch
+  })
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -64,8 +70,24 @@ export default function News() {
         <p className="text-gray-500">Aktuelle Meldungen aus der Kaiserstadt</p>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      {/* Search bar */}
+      <div className="relative mb-5">
+        <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Nachrichten durchsuchen …"
+          className="w-full pl-11 pr-10 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#003D73] focus:ring-2 focus:ring-[#003D73]/10 transition-all"
+        />
+        {query && (
+          <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <X size={16} />
+          </button>
+        )}
+      </div>
+
+      {/* Category filter tabs */}
+      <div className="flex flex-wrap gap-2 mb-6">
         {categories.map(cat => (
           <button
             key={cat}
@@ -86,14 +108,14 @@ export default function News() {
         ))}
       </div>
 
-      {/* Results count */}
       <p className="text-sm text-gray-400 mb-4">
-        {filtered.length} Artikel{filtered.length !== 1 ? '' : ''}
-        {active !== ALL ? ` in „${active}"` : ' insgesamt'}
+        {filtered.length} Ergebnis{filtered.length !== 1 ? 'se' : ''}
+        {active !== ALL ? ` in „${active}"` : ''}
+        {query ? ` für „${query}"` : ''}
       </p>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">Keine Nachrichten in dieser Kategorie.</div>
+        <div className="text-center py-20 text-gray-400">Keine Nachrichten gefunden.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filtered.map(a => (
