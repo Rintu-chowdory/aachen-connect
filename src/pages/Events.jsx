@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MapPin, Clock } from 'lucide-react'
+import { MapPin, Clock, Search, X } from 'lucide-react'
 
 const events = [
   { date: '28. Jun', month: '2025', title: 'Altstadtfest Aachen', location: 'Altstadt & Marktplatz', time: '14:00 – 22:00', cat: 'Stadtfest', desc: 'Das jährliche Altstadtfest mit Live-Musik, Ständen und Vorführungen rund um den historischen Marktplatz.', color: 'bg-blue-600' },
@@ -26,8 +26,14 @@ const categories = [ALL, ...Array.from(new Set(events.map(e => e.cat)))]
 
 export default function Events() {
   const [active, setActive] = useState(ALL)
+  const [query, setQuery] = useState('')
 
-  const filtered = active === ALL ? events : events.filter(e => e.cat === active)
+  const filtered = events.filter(e => {
+    const matchCat = active === ALL || e.cat === active
+    const q = query.toLowerCase()
+    const matchSearch = !q || e.title.toLowerCase().includes(q) || e.location.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q)
+    return matchCat && matchSearch
+  })
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -36,8 +42,24 @@ export default function Events() {
         <p className="text-gray-500">Aktuelle & kommende Highlights in der Kaiserstadt</p>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      {/* Search bar */}
+      <div className="relative mb-5">
+        <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Veranstaltungen durchsuchen …"
+          className="w-full pl-11 pr-10 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#003D73] focus:ring-2 focus:ring-[#003D73]/10 transition-all"
+        />
+        {query && (
+          <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <X size={16} />
+          </button>
+        )}
+      </div>
+
+      {/* Category filter tabs */}
+      <div className="flex flex-wrap gap-2 mb-6">
         {categories.map(cat => (
           <button
             key={cat}
@@ -58,14 +80,14 @@ export default function Events() {
         ))}
       </div>
 
-      {/* Results count */}
       <p className="text-sm text-gray-400 mb-4">
-        {filtered.length} Veranstaltung{filtered.length !== 1 ? 'en' : ''}
-        {active !== ALL ? ` in „${active}"` : ' insgesamt'}
+        {filtered.length} Ergebnis{filtered.length !== 1 ? 'se' : ''}
+        {active !== ALL ? ` in „${active}"` : ''}
+        {query ? ` für „${query}"` : ''}
       </p>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">Keine Veranstaltungen in dieser Kategorie.</div>
+        <div className="text-center py-20 text-gray-400">Keine Veranstaltungen gefunden.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filtered.map(e => (
