@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Clock, ChevronRight } from 'lucide-react'
 
 const articles = [
@@ -48,29 +49,69 @@ const catColors = {
   Verkehr: 'bg-teal-100 text-teal-700',
 }
 
+const ALL = 'Alle'
+const categories = [ALL, ...Array.from(new Set(articles.map(a => a.cat)))]
+
 export default function News() {
+  const [active, setActive] = useState(ALL)
+
+  const filtered = active === ALL ? articles : articles.filter(a => a.cat === active)
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Aachen Nachrichten</h1>
         <p className="text-gray-500">Aktuelle Meldungen aus der Kaiserstadt</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {articles.map(a => (
-          <div key={a.title} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
-            <div className={`${a.color} h-2 w-full`} />
-            <div className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${catColors[a.cat] || 'bg-gray-100 text-gray-600'}`}>{a.cat}</span>
-                <span className="flex items-center gap-1 text-xs text-gray-400"><Clock size={11} />{a.date}</span>
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2 group-hover:text-[#003D73] transition-colors">{a.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed mb-3">{a.summary}</p>
-              <span className="flex items-center gap-1 text-[#003D73] font-semibold text-sm">Weiterlesen <ChevronRight size={14} /></span>
-            </div>
-          </div>
+
+      {/* Filter tabs */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActive(cat)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
+              active === cat
+                ? 'bg-[#003D73] text-white border-[#003D73] shadow-sm'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-[#003D73] hover:text-[#003D73]'
+            }`}
+          >
+            {cat}
+            {cat !== ALL && (
+              <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${active === cat ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>
+                {articles.filter(a => a.cat === cat).length}
+              </span>
+            )}
+          </button>
         ))}
       </div>
+
+      {/* Results count */}
+      <p className="text-sm text-gray-400 mb-4">
+        {filtered.length} Artikel{filtered.length !== 1 ? '' : ''}
+        {active !== ALL ? ` in „${active}"` : ' insgesamt'}
+      </p>
+
+      {filtered.length === 0 ? (
+        <div className="text-center py-20 text-gray-400">Keine Nachrichten in dieser Kategorie.</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {filtered.map(a => (
+            <div key={a.title} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
+              <div className={`${a.color} h-2 w-full`} />
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${catColors[a.cat] || 'bg-gray-100 text-gray-600'}`}>{a.cat}</span>
+                  <span className="flex items-center gap-1 text-xs text-gray-400"><Clock size={11} />{a.date}</span>
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2 group-hover:text-[#003D73] transition-colors">{a.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed mb-3">{a.summary}</p>
+                <span className="flex items-center gap-1 text-[#003D73] font-semibold text-sm">Weiterlesen <ChevronRight size={14} /></span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
